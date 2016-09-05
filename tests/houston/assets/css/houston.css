@@ -1,6 +1,10 @@
 body {
     overflow-y: scroll !important;
 }
+
+.navbar {
+    background: #FFFFFF;
+}
 .container {
     margin-top: 150px;
 }

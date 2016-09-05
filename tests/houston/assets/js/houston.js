@@ -1,6 +1,9 @@
 var Houston = {
     problemsResource: null,
     problems: [],
+    storage: $.localStorage,
+    template: $('#problem-template > .panel'),
+    stackOverflowUrl: 'http://stackoverflow.com/search?q=php+',
 
     init: function () {
         if (this.problemsResource === null) {
@@ -13,6 +16,7 @@ var Houston = {
     },
 
     getProblems: function () {
+        //if(this.storage.isEmpty('problems')) {
         var problemsFiles = $(this.problemsResource).data('problems');
         var total = problemsFiles.length;
         var i = 0;
@@ -32,32 +36,59 @@ var Houston = {
                 });
 
                 if (i === total) {
+                    //self.storage.set('problems', self.problems);
                     self.showProblems();
+                    $('.problem-counter').countTo({
+                        from: 0,
+                        to: self.problems.length,
+                        speed: 800,
+                        refreshInterval: 100
+                    });
+
                 }
             })
         });
+        // } else {
+        //     this.problems = this.storage.get('problems');
+        //     this.showProblems();
+        // }
     },
 
     showProblems: function () {
         var self = this;
 
-        $(this.problems).each(function (key, value) {
+        // Reverse to get newest at the top
+        $(this.problems.reverse()).each(function (key, value) {
             var title = value.data.body.abstract_payload.exception.class;
             var level = value.data.level;
             var message = value.data.body.abstract_payload.exception.message;
             var line = value.data.body.abstract_payload.exception.line;
             var context = self.getContext(value);
+            var timestamp = moment.unix(value.data.timestamp);
+            var template = self.template.clone();
 
-            $('#problems').append(
-                '<div class="panel panel-' + self.levelToCss(level) + '" data-filter-level="' + level + '">' +
-                '<div class="panel-heading">' + title + '</div>' +
-                '<div class="panel-body">' + message + ' on line ' + line + ' <a href="#context-' + key + '" data-toggle="collapse" class="pull-right">toggle context</a><br/>' +
-                '<div id="context-' + key + '" class="collapse">' + context + '</div></div>' +
-                '</div>');
+            // Fill template
 
+            template.addClass('panel-' + self.levelToCss(level));
+            template.attr('data-filter-level', level);
+            template.find('.panel-heading').text(timestamp.format('DD-MM-YYYY HH:mm:ss') + ' - ' + title);
+            template.find('p:first').html(message + ' on line ' + line + ' <a href="#collapse-' + key + '" data-toggle="collapse" class="pull-right">toggle context</a><br/>');
+            template.find('.pane-traceback').html(context);
 
-            hljs.initHighlightingOnLoad();
+            template.find('.collapse').attr('id', 'collapse-' + key);
+            template.find('.nav-tabs li.tab-traceback').find('a').attr('href', '#traceback-' + key);
+            template.find('.nav-tabs li.tab-browser-os').find('a').attr('href', '#browser-os-' + key);
+            template.find('.nav-tabs li.tab-stack-overflow').find('a').attr('href', self.stackOverflowUrl + title.replace(' ', '+'));
+
+            template.find('.pane-traceback').attr('id', 'traceback-' + key);
+            template.find('.pane-browser-os').attr('id', 'browser-os-' + key);
+
+            // Append template
+            $('#problems').append(template);
         });
+
+        // code highlighting
+        hljs.initHighlightingOnLoad();
     },
 
     getContext: function (problem) {
@@ -104,10 +135,13 @@ var Houston = {
     },
 
     levelToCss: function (level) {
+        console.log(level);
         if (level == 'debug') {
-            return 'warning';
+            return 'primary';
         } else if (level == 'error') {
             return 'danger';
+        } else if (level == 'warning') {
+            return 'warning';
         }
 
         return 'primary';

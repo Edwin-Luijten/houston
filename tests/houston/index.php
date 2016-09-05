@@ -20,6 +20,8 @@ foreach (glob('./*.problem') as $file) {
     <link href="./assets/css/paper.css" rel="stylesheet">
     <link href="./assets/css/houston.css" rel="stylesheet">
     <link rel="stylesheet" href="./assets/css/hightlight-tomorrow-night.css">
+    <link rel="stylesheet" href="./assets/css/font-awesome.min.css">
+    <link rel="stylesheet" href="./assets/css/animate.min.css">
     <meta name="problems" data-problems='<?= json_encode($fileList) ?>' id="problems-source">
 </head>
 <body>
@@ -39,19 +41,45 @@ foreach (glob('./*.problem') as $file) {
 </nav>
 
 <div class="container">
+    <h3>We've got <span class="problem-counter">0</span> problems <small> but a bitch ain't one</small></h3>
     <div class="row">
-
             <div class="pull-right">
                 <div class="btn-group">
-                    <button type="button" class="btn btn-warning btn-filter-level" data-value="debug">Debug</button>
-                    <button type="button" class="btn btn-danger btn-filter-level" data-value="error">Error</button>
-                    <button type="button" class="btn btn-success btn-filter-level" data-value="all">All</button>
+                    <button type="button" class="btn btn-sm btn-danger btn-filter-level" data-value="critical">Critical</button>
+                    <button type="button" class="btn btn-sm btn-danger btn-filter-level" data-value="error">Error</button>
+                    <button type="button" class="btn btn-sm btn-warning btn-filter-level" data-value="warning">Warning</button>
+                    <button type="button" class="btn btn-sm btn-primary btn-filter-level" data-value="inf">Info</button>
+                    <button type="button" class="btn btn-sm btn-primary btn-filter-level" data-value="debug">Debug</button>
+                    <button type="button" class="btn btn-sm btn-success btn-filter-level" data-value="all">All</button>
                 </div>
             </div>
-
     </div>
     <div class="row"><div class="col-md-12">&nbsp;</div></div>
     <div class="row" id="problems">
+    </div>
+</div>
+
+<div id="problem-template" class="hidden">
+    <div class="panel">
+        <div class="panel-heading">
+
+        </div>
+        <div class="panel-body">
+            <p></p>
+            <div class="collapse">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li class="active tab-traceback"><a href="" data-toggle="tab">Traceback</a></li>
+                    <li class="tab-browser-os"><a href="" data-toggle="tab">Browser/OS</a></li>
+                    <li class="tab-stack-overflow"><a href="" target="_blank"><i class="fa fa-stack-overflow"></i>&nbsp;</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active pane-traceback">
+
+                    </div>
+                    <div class="tab-pane pane-browser-os">...</div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -60,6 +88,9 @@ foreach (glob('./*.problem') as $file) {
         integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
         crossorigin="anonymous"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/highlight.min.js"></script>
+<script src="./assets/js/moment.js"></script>
+<script src="./assets/js/storage.js"></script>
+<script src="./assets/js/countTo.js"></script>
 <script src="./assets/js/houston.js"></script>
 <script>
     Houston.problemsResource = $('#problems-source');
