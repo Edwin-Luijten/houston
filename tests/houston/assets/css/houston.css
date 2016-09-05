@@ -1,0 +1,10 @@
+body {
+    overflow-y: scroll !important;
+}
+.container {
+    margin-top: 150px;
+}
+
+#filter-level li {
+    float: right;
+}

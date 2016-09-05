@@ -1,0 +1,82 @@
+{
+  "data": {
+    "platform": "Windows NT MM0030158 6.1 build 7601 (Windows 7 Professional Edition Service Pack 1) i586",
+    "language": "PHP 5.6.20",
+    "uuid": "75bd272b-d608-4718-9fb4-44fb39fc33b5",
+    "body": {
+      "abstract_payload": {
+        "frames": [
+          {
+            "filename": "C:\\Projects\\_packages\\houston\\tests\\src\\indelude.php",
+            "line_number": 7,
+            "method": "<main>",
+            "code": "        echo $test;",
+            "context": {
+              "pre": [
+                "<?php",
+                "",
+                "class Tes {",
+                "",
+                "    public function __construct()",
+                "    {"
+              ],
+              "post": [
+                "    }",
+                "}"
+              ]
+            }
+          },
+          {
+            "filename": "C:\\Projects\\_packages\\houston\\tests\\src\\houston.php",
+            "line_number": 15,
+            "code": "new Tes();",
+            "context": {
+              "pre": [
+                "",
+                "Houston::init([",
+                "    'handler' => 'file',",
+                "    'file_log_location' => __DIR__ . '\/..',",
+                "]);",
+                ""
+              ],
+              "post": [
+                "new Exceptio();",
+                "echo 'hello world';"
+              ]
+            }
+          }
+        ],
+        "exception": {
+          "class": "E_NOTICE: Undefined variable: test",
+          "message": "Undefined variable: test",
+          "file": "C:\\Projects\\_packages\\houston\\tests\\src\\indelude.php",
+          "line": 7
+        }
+      }
+    },
+    "level": "debug",
+    "request": {
+      "url": "http:\/\/localhost\/_packages\/houston\/tests\/src\/houston.php",
+      "method": "GET",
+      "headers": {
+        "Host": "********",
+        "Connection": "********",
+        "Cache-Control": "********",
+        "Upgrade-Insecure-Requests": "********",
+        "User-Agent": "********",
+        "Accept": "********",
+        "Accept-Encoding": "********",
+        "Accept-Language": "********",
+        "Cookie": "********"
+      },
+      "query_string": "",
+      "user_ip": "::1"
+    },
+    "server": [],
+    "notifier": {
+      "name": "Houston",
+      "version": "0"
+    },
+    "timestamp": 1473062303
+  }
+}
