@@ -8,7 +8,7 @@ $_SESSION = [];
 
 Houston::init([
     'handler' => 'file',
-    'file_log_location' => __DIR__ . '/..',
+    'file_log_location' => __DIR__ . '/../houston/houston.problem',
 ]);
 trigger_error('deprecated error', E_USER_DEPRECATED);
 trigger_error('error', E_USER_ERROR);

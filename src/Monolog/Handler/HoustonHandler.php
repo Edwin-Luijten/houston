@@ -4,10 +4,10 @@ namespace EdwinLuijten\Houston\Monolog\Handler;
 
 use EdwinLuijten\Houston\HoustonNotifier;
 use Exception;
-use Monolog\Handler\AbstractSyslogHandler;
+use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger;
 
-class HoustonHandler extends AbstractSyslogHandler
+class HoustonHandler extends RotatingFileHandler
 {
     /**
      * @var HoustonNotifier
@@ -21,13 +21,6 @@ class HoustonHandler extends AbstractSyslogHandler
      */
     private $hasRecords = false;
 
-    public function __construct(HoustonNotifier $notifier, $level = Logger::ERROR, $bubble = true)
-    {
-        $this->notifier = $notifier;
-
-        parent::__construct($level, $bubble);
-    }
-
     /**
      * Writes the record down to the log of the implementing handler
      *
@@ -36,14 +29,17 @@ class HoustonHandler extends AbstractSyslogHandler
      */
     protected function write(array $record)
     {
-        if (isset($record['context']['exception']) && $record['context']['exception'] instanceof Exception) {
-            $context = $record['context'];
-            $exception = $context['exception'];
-            unset($context['exception']);
+        $record['formatted'] = $this->formatter->format($record);
 
-            $this->notifier->notify($this->level, $exception, $context);
+        if (null === $this->mustRotate) {
+            $this->mustRotate = !file_exists($this->url);
         }
 
-        $this->hasRecords = true;
+        if ($this->nextRotation < $record['datetime']) {
+            $this->mustRotate = true;
+            $this->close();
+        }
+
+        parent::write($record);
     }
 }

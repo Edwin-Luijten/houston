@@ -2,7 +2,9 @@
 
 namespace EdwinLuijten\Houston;
 
+use EdwinLuijten\Houston\Monolog\Formatter\HoustonJsonFormatter;
 use EdwinLuijten\Houston\Payload\Payload;
+use Monolog\Handler\RotatingFileHandler;
 
 class HoustonNotifier
 {
@@ -37,17 +39,27 @@ class HoustonNotifier
 
     public function notify($level, $toLog, array $context = [])
     {
-        $payload  = $this->getPayload($level, $toLog, $context);
-        $response = $this->sendOrIgnore($payload, $toLog);
+        $payload = $this->getPayload($level, $toLog, $context);
+        $level   = $payload->getData()->getLevel()->toInt();
+        $handler = new RotatingFileHandler($this->config->getConfig()['file_log_location'], 0, $level);
+        $handler->setFormatter(new HoustonJsonFormatter());
 
-        $this->handleResponse(
-            $payload,
-            $response
-        );
+//        $logger = new Logger('houston');
+//        $logger->pushHandler($handler);
 
-        return $response;
+        $data['level']   = $level;
+        $data['payload'] = $payload->jsonSerialize();
+        $data['datetime'] = (new \DateTime())->format('Y-m-d H:i:s');
+        $handler->handle($data);
+        //$logger->log($level, $payload->getData()->getUuid(), $payload->jsonSerialize());
     }
 
+    /**
+     * @param $level
+     * @param $toLog
+     * @param $context
+     * @return Payload
+     */
     public function getPayload($level, $toLog, $context)
     {
         //var_dump($this->config->getData($level, $toLog, $context)); exit;
