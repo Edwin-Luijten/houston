@@ -5,6 +5,7 @@ namespace EdwinLuijten\Houston;
 use EdwinLuijten\Houston\Monolog\Formatter\HoustonJsonFormatter;
 use EdwinLuijten\Houston\Payload\Payload;
 use Monolog\Handler\RotatingFileHandler;
+use Monolog\Logger;
 
 class HoustonNotifier
 {
@@ -41,17 +42,19 @@ class HoustonNotifier
     {
         $payload = $this->getPayload($level, $toLog, $context);
         $level   = $payload->getData()->getLevel()->toInt();
-        $handler = new RotatingFileHandler($this->config->getConfig()['file_log_location'], 0, $level);
+
+        $handler = new RotatingFileHandler($this->config->getConfig()['file_log_location']);
         $handler->setFormatter(new HoustonJsonFormatter());
 
-//        $logger = new Logger('houston');
-//        $logger->pushHandler($handler);
-
+        //$logger = new Logger('houston');
+        //$logger->pushHandler($handler);
+        //$logger->log($level, '', $data);
         $data['level']   = $level;
         $data['payload'] = $payload->jsonSerialize();
         $data['datetime'] = (new \DateTime())->format('Y-m-d H:i:s');
+
+
         $handler->handle($data);
-        //$logger->log($level, $payload->getData()->getUuid(), $payload->jsonSerialize());
     }
 
     /**
