@@ -27,7 +27,7 @@ class FileSender implements SenderInterface
 
     private function loadFile()
     {
-        $filename  = $this->logLocation . '/houston/' . microtime(true) . '.problem';
+        $filename  = $this->logLocation . '/houston/' . (new \DateTime())->format('Y-m-d') . '.problem';
         $this->log = fopen($filename, 'a');
     }
 }

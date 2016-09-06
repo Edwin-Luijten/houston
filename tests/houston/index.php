@@ -21,7 +21,7 @@ foreach (glob('./*.problem') as $file) {
     <link href="./assets/css/houston.css" rel="stylesheet">
     <link rel="stylesheet" href="./assets/css/hightlight-tomorrow-night.css">
     <link rel="stylesheet" href="./assets/css/font-awesome.min.css">
-    <link rel="stylesheet" href="./assets/css/animate.min.css">
+    <link rel="stylesheet" href="./assets/css/animate.css">
     <meta name="problems" data-problems='<?= json_encode($fileList) ?>' id="problems-source">
 </head>
 <body>
@@ -60,7 +60,7 @@ foreach (glob('./*.problem') as $file) {
 </div>
 
 <div id="problem-template" class="hidden">
-    <div class="panel">
+    <div class="panel animated fadeIn">
         <div class="panel-heading">
 
         </div>
