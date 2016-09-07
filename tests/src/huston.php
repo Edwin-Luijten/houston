@@ -7,7 +7,6 @@ use \EdwinLuijten\Houston\Houston;
 $_SESSION = [];
 
 Houston::init([
-    'handler' => 'file',
     'file_log_location' => __DIR__ . '/../houston/houston.problem',
 ]);
 trigger_error('deprecated error', E_USER_DEPRECATED);
@@ -15,7 +14,7 @@ trigger_error('error', E_USER_ERROR);
 trigger_error('notice', E_USER_NOTICE);
 trigger_error('warning', E_USER_WARNING);
 
-throw new Exception('thrown exception');
+throw new Exception('thrown exception' . "\n");
 new Tes();
 
 echo 'hello world';

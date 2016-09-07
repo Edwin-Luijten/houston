@@ -13,6 +13,7 @@ var Houston = {
 
         this.getProblems();
         this.enableFilterByLevel();
+        this.enableFilterByHistory();
     },
 
     getProblems: function () {
@@ -66,11 +67,25 @@ var Houston = {
             var context = self.getContext(value);
             var timestamp = moment.unix(value.data.timestamp);
             var template = self.template.clone();
+            var current = moment();
 
             // Fill template
+            var diff = current.diff(timestamp, 'days');
+            var history = '';
+            var currentWeek = current.format('W');
+            var week = timestamp.format('W');
+
+            if (diff == 0) {
+                history = history + ' today ';
+            } else if (diff == 1) {
+                history = history + ' yesterday ';
+            } else if (currentWeek == week) {
+                history = history + ' last-week ';
+            }
 
             template.addClass('panel-' + self.levelToCss(level));
             template.attr('data-filter-level', level);
+            template.attr('data-filter-history', history);
             template.find('.panel-heading').text(timestamp.format('DD-MM-YYYY HH:mm:ss') + ' - ' + title);
             template.find('p:first').html(message + ' on line ' + line + ' <a href="#collapse-' + key + '" data-toggle="collapse" class="pull-right">toggle context</a><br/>');
             template.find('.pane-traceback').html(context);
@@ -132,6 +147,23 @@ var Houston = {
 
     filterByLevel: function (level) {
         $('#problems .panel').not('[data-filter-level=' + level + ']').hide();
+    },
+
+    enableFilterByHistory: function () {
+        var self = this;
+        $('.btn-filter-history').click(function (event) {
+            var value = $(this).data('value');
+            $('#problems .panel').show();
+
+            if (value !== 'all') {
+                self.filterByHistory(value);
+            }
+        });
+    },
+
+    filterByHistory: function (value) {
+        console.log(value);
+        $('#problems .panel').not('[data-filter-history~=' + value + ']').hide();
     },
 
     levelToCss: function (level) {

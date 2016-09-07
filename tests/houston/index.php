@@ -43,6 +43,18 @@ foreach (glob('./*.problem') as $file) {
 <div class="container">
     <h3>We've got <span class="problem-counter">0</span> problems <small> but a bitch ain't one</small></h3>
     <div class="row">
+        <div class="pull-left">
+            <div class="btn-group">
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fa fa-history"></i> History <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a href="#" class="btn-filter-history" data-value="today">Today</a></li>
+                    <li><a href="#" class="btn-filter-history" data-value="yesterday">Yesterday</a></li>
+                    <li><a href="#" class="btn-filter-history" data-value="this-week">This week</a></li>
+                </ul>
+            </div>
+        </div>
             <div class="pull-right">
                 <div class="btn-group">
                     <button type="button" class="btn btn-sm btn-danger btn-filter-level" data-value="critical">Critical</button>
