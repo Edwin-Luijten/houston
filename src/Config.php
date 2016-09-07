@@ -18,9 +18,7 @@ class Config
 
     private $transformer;
 
-    private $filter;
-
-    private $responseHandler;
+    private $senders = [];
 
     private $errorSampleRates;
 
@@ -69,9 +67,7 @@ class Config
     {
         $this->config = $config;
         $this->setBuilder($config);
-        $this->setTransformer($config);
-        $this->setSender($config);
-        $this->setResponseHandler($config);
+        $this->setSenders($config);
     }
 
     private function setBuilder($config)
@@ -79,28 +75,21 @@ class Config
         $this->setup($config, 'builder', BuilderInterface::class, Builder::class, true);
     }
 
-    private function setTransformer($config)
+    private function setSenders($config)
     {
-        //$this->setup($config, 'transformer', )
-    }
+        $this->config['senderOptions'] = [
+            'fileLogLocation' => '/var/log/houston.problem',
+        ];
 
-    private function setSender($config)
-    {
-        $default = FileSender::class;
-        if (array_key_exists('handler', $config) && $config['handler'] === 'file') {
-
-            if (array_key_exists('file_log_location', $config)) {
-                $config['senderOptions'] = [
-                    'fileLogLocation' => $config['file_log_location'],
-                ];
-            }
+        if (array_key_exists('file_log_location', $config)) {
+            $this->config['senderOptions'] = [
+                'fileLogLocation' => $config['file_log_location'],
+            ];
         }
 
-        $this->setup($config, 'sender', SenderInterface::class, $default);
-    }
-
-    private function setResponseHandler($config)
-    {
+        if (array_key_exists('handlers', $config)) {
+            $this->senders = $config['handlers'];
+        }
 
     }
 
@@ -147,15 +136,7 @@ class Config
         return $this->transformer->transform($payload, $level, $toLog, $context);
     }
 
-    public function send($payload)
-    {
-        return $this->sender->send($payload);
-    }
-
-    public function handleResponse($payload, $response)
-    {
-        if (!is_null($this->responseHandler)) {
-            $this->responseHandler->handle($payload, $response);
-        }
+    public function getSenders() {
+        return $this->senders;
     }
 }

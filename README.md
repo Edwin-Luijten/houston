@@ -18,6 +18,34 @@ $ composer require edwin-luijten/houston
 
 ## Usage
 
+### Enable Houston
+
+By default Houston uses the `RotatingFileHandler` class from monolog,  
+and logs to /var/log/houston-{date}.problem.
+
+```php
+Houston::init();
+```
+
+To overwrite the default log path for the `RotatingFileHandler`:
+```php
+Houston::init([
+    'file_log_location' => __DIR__ . '/my-log-folder/my-log.txt',
+]);
+```
+
+### Handlers
+
+You can use all the handlers available in the monolog package:
+```php
+Houston::init([
+    'handlers' => [
+        new RotatingFileHandler('logpath'),
+        new RedisHandler($redisClient, $key),
+    ]
+]);
+```
+
 ## Testing
 
 ``` bash

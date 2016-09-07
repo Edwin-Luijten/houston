@@ -13,7 +13,7 @@ class HoustonJsonFormatter implements FormatterInterface {
      */
     public function format(array $record)
     {
-        return json_encode($record['payload']) . PHP_EOL;
+        return json_encode($record['context']) . PHP_EOL;
     }
 
     /**

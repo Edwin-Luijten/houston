@@ -2,6 +2,8 @@
 
 namespace EdwinLuijten\Houston\Payload\Partials;
 
+use Monolog\Logger;
+
 class Level extends AbstractPayload
 {
 
@@ -20,11 +22,11 @@ class Level extends AbstractPayload
     {
         if (is_null(self::$consts)) {
             self::$consts = [
-                "critical" => new Level("critical", 100000),
-                "error"    => new Level("error", 10000),
-                "warning"  => new Level("warning", 1000),
-                "info"     => new Level("info", 100),
-                "debug"    => new Level("debug", 10),
+                "critical" => new Level("critical", Logger::CRITICAL),
+                "error"    => new Level("error", Logger::ERROR),
+                "warning"  => new Level("warning", Logger::WARNING),
+                "info"     => new Level("info", Logger::INFO),
+                "debug"    => new Level("debug", Logger::DEBUG),
                 "ignored"  => new Level("ignore", 0),
                 "ignore"   => new Level("ignore", 0)
             ];

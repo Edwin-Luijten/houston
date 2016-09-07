@@ -40,21 +40,28 @@ class HoustonNotifier
 
     public function notify($level, $toLog, array $context = [])
     {
+        $config = $this->config->getConfig();
         $payload = $this->getPayload($level, $toLog, $context);
         $level   = $payload->getData()->getLevel()->toInt();
 
-        $handler = new RotatingFileHandler($this->config->getConfig()['file_log_location']);
-        $handler->setFormatter(new HoustonJsonFormatter());
+        $logger = new Logger('houston');
 
-        //$logger = new Logger('houston');
-        //$logger->pushHandler($handler);
-        //$logger->log($level, '', $data);
-        $data['level']   = $level;
-        $data['payload'] = $payload->jsonSerialize();
-        $data['datetime'] = (new \DateTime())->format('Y-m-d H:i:s');
+        if(empty($this->config->getSenders())) {
 
+            $handler = new RotatingFileHandler($config['senderOptions']['fileLogLocation']);
+            $handler->setFormatter(new HoustonJsonFormatter());
 
-        $handler->handle($data);
+            $logger->pushHandler($handler);
+        } else {
+            foreach ($this->config->getSenders() as $handler) {
+                // Set the formatter on every handler
+                $handler->setFormatter(new HoustonJsonFormatter());
+
+                $logger->pushHandler($handler);
+            }
+        }
+
+        $logger->addRecord($level, '', $payload->jsonSerialize());
     }
 
     /**
