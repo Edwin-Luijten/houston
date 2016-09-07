@@ -166,7 +166,7 @@ class Builder implements BuilderInterface
             return;
         }
 
-        $source = explode(PHP_EOL, file_get_contents($filename));
+        $source = file($filename);
 
         if (!is_array($source)) {
             return;
