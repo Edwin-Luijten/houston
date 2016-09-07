@@ -4,6 +4,20 @@ var Houston = {
     storage: $.localStorage,
     template: $('#problem-template > .panel'),
     stackOverflowUrl: 'http://stackoverflow.com/search?q=php+',
+    filter: {
+        history: 'today',
+        level: 'all',
+        all: 1,
+        critical: 2,
+        error: 3,
+        warning: 4,
+        info: 5,
+        debug: 6,
+        today: 10,
+        yesterday: 11,
+        thisWeek: 12,
+        older: 13
+    },
 
     init: function () {
         if (this.problemsResource === null) {
@@ -12,8 +26,6 @@ var Houston = {
         }
 
         this.getProblems();
-        this.enableFilterByLevel();
-        this.enableFilterByHistory();
     },
 
     getProblems: function () {
@@ -46,6 +58,10 @@ var Houston = {
                         refreshInterval: 100
                     });
 
+                   $('.problems-container').filterizr({
+                       layout: 'vertical'
+                   });
+
                 }
             })
         });
@@ -76,16 +92,20 @@ var Houston = {
             var week = timestamp.format('W');
 
             if (diff == 0) {
-                history = history + ' today ';
+                history = history + self.filter['today'] +', ';
             } else if (diff == 1) {
-                history = history + ' yesterday ';
-            } else if (currentWeek == week) {
-                history = history + ' last-week ';
+                history = history + self.filter['yesterday'] +', ';
+            }
+
+            if (currentWeek == week) {
+                history = history + self.filter['thisWeek'] + ', ';
+            } else {
+                history = history + self.filter['older'] + ', ';
             }
 
             template.addClass('panel-' + self.levelToCss(level));
-            template.attr('data-filter-level', level);
-            template.attr('data-filter-history', history);
+            template.attr('data-category', (self.filter.all + ', ' + self.filter[level] + ', ' + history).slice(0, -2));
+
             template.find('.panel-heading').text(timestamp.format('DD-MM-YYYY HH:mm:ss') + ' - ' + title);
             template.find('p:first').html(message + ' on line ' + line + ' <a href="#collapse-' + key + '" data-toggle="collapse" class="pull-right">toggle context</a><br/>');
             template.find('.pane-traceback').html(context);
@@ -111,20 +131,20 @@ var Houston = {
         var frames = problem.data.body.abstract_payload.frames;
 
         $(frames).each(function (key, value) {
-            context = context + '<pre><code class="php">';
-            context = context + '// File: ' + value.filename + '<br/>';
-            context = context + '// Line: ' + value.line_number + '<br/>';
 
+            context = context + '<div class="source-info"><span class="source-file">File: ' + value.filename + '</span><br/>';
+            context = context + '<span class="source-line">Line: ' + value.line_number + '</span></div>';
+            context = context + '<pre><code class="php">';
             $(value.context).each(function (key, cnt) {
 
                 $(cnt.pre).each(function (key, code) {
-                    context = context + code + '\n';
+                    context = context + code;
                 });
                 context = context + '<span class="problem">';
                 context = context + value.code;
                 context = context + '</span>'; // + '\n';
                 $(cnt.post).each(function (key, code) {
-                    context = context + code + '\n';
+                    context = context + code;
                 });
             });
             context = context + '</code></pre>';
@@ -133,41 +153,8 @@ var Houston = {
         return context.replace('<?php', this.escape('<?php'));
     },
 
-    enableFilterByLevel: function () {
-        var self = this;
-        $('.btn-filter-level').click(function (event) {
-            var value = $(this).data('value');
-            $('#problems .panel').show();
-
-            if (value !== 'all') {
-                self.filterByLevel(value);
-            }
-        });
-    },
-
-    filterByLevel: function (level) {
-        $('#problems .panel').not('[data-filter-level=' + level + ']').hide();
-    },
-
-    enableFilterByHistory: function () {
-        var self = this;
-        $('.btn-filter-history').click(function (event) {
-            var value = $(this).data('value');
-            $('#problems .panel').show();
-
-            if (value !== 'all') {
-                self.filterByHistory(value);
-            }
-        });
-    },
-
-    filterByHistory: function (value) {
-        console.log(value);
-        $('#problems .panel').not('[data-filter-history~=' + value + ']').hide();
-    },
-
     levelToCss: function (level) {
-        console.log(level);
+
         if (level == 'debug') {
             return 'primary';
         } else if (level == 'error') {
