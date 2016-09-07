@@ -1,5 +1,5 @@
 var Houston = {
-    problemsResource: null,
+    problemsResource: $('#problems-source'),
     problems: [],
     storage: $.localStorage,
     template: $('#problem-template > .panel'),

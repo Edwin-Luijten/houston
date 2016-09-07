@@ -109,7 +109,6 @@ foreach (glob('./*.problem') as $file) {
 <script src="./assets/js/filter.js"></script>
 <script src="./assets/js/houston.js"></script>
 <script>
-    Houston.problemsResource = $('#problems-source');
     Houston.init();
 </script>
 </body>
