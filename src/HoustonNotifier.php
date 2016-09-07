@@ -46,20 +46,20 @@ class HoustonNotifier
 
         $logger = new Logger('houston');
 
-        if(empty($this->config->getSenders())) {
-
-            $handler = new RotatingFileHandler($config['senderOptions']['fileLogLocation']);
+        if($config['handlerOptions']['disableDefaultHandler'] === false) {
+            $handler = new RotatingFileHandler($config['handlerOptions']['fileLogLocation']);
             $handler->setFormatter(new HoustonJsonFormatter());
 
             $logger->pushHandler($handler);
-        } else {
-            foreach ($this->config->getSenders() as $handler) {
-                // Set the formatter on every handler
-                $handler->setFormatter(new HoustonJsonFormatter());
-
-                $logger->pushHandler($handler);
-            }
         }
+
+        foreach ($this->config->getHandlers() as $handler) {
+            // Set the formatter on every handler
+            $handler->setFormatter(new HoustonJsonFormatter());
+
+            $logger->pushHandler($handler);
+        }
+
 
         $logger->addRecord($level, '', $payload->jsonSerialize());
     }
@@ -72,7 +72,6 @@ class HoustonNotifier
      */
     public function getPayload($level, $toLog, $context)
     {
-        //var_dump($this->config->getData($level, $toLog, $context)); exit;
         return $this->config->transform(new Payload(
             $this->config->getData($level, $toLog, $context)
         ), $level, $toLog, $context);

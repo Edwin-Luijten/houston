@@ -18,7 +18,7 @@ class Config
 
     private $transformer;
 
-    private $senders = [];
+    private $handlers = [];
 
     private $errorSampleRates;
 
@@ -67,7 +67,7 @@ class Config
     {
         $this->config = $config;
         $this->setBuilder($config);
-        $this->setSenders($config);
+        $this->setHandlers($config);
     }
 
     private function setBuilder($config)
@@ -75,16 +75,19 @@ class Config
         $this->setup($config, 'builder', BuilderInterface::class, Builder::class, true);
     }
 
-    private function setSenders($config)
+    private function setHandlers($config)
     {
-        $this->config['senderOptions'] = [
+        $this->config['handlerOptions'] = [
             'fileLogLocation' => '/var/log/houston.problem',
+            'disableDefaultHandler' => false,
         ];
 
         if (array_key_exists('file_log_location', $config)) {
-            $this->config['senderOptions'] = [
-                'fileLogLocation' => $config['file_log_location'],
-            ];
+            $this->config['handlerOptions']['fileLogLocation'] = $config['file_log_location'];
+        }
+
+        if (array_key_exists('disable_default_handler', $config)) {
+            $this->config['handlerOptions']['disableDefaultHandler'] = $config['disable_default_handler'];
         }
 
         if (array_key_exists('handlers', $config)) {
@@ -136,7 +139,7 @@ class Config
         return $this->transformer->transform($payload, $level, $toLog, $context);
     }
 
-    public function getSenders() {
-        return $this->senders;
+    public function getHandlers() {
+        return $this->handlers;
     }
 }
