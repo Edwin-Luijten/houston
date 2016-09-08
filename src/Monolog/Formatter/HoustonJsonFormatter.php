@@ -4,7 +4,8 @@ namespace EdwinLuijten\Houston\Monolog\Formatter;
 
 use Monolog\Formatter\FormatterInterface;
 
-class HoustonJsonFormatter implements FormatterInterface {
+class HoustonJsonFormatter implements FormatterInterface
+{
     /**
      * Formats a log record.
      *
@@ -24,6 +25,12 @@ class HoustonJsonFormatter implements FormatterInterface {
      */
     public function formatBatch(array $records)
     {
-        // TODO: Implement formatBatch() method.
+        $batch = [];
+
+        foreach ($records as $record) {
+            $batch[] = json_encode($record['context']) . PHP_EOL;
+        }
+
+        return $batch;
     }
 }
