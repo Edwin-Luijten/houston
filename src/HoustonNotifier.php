@@ -28,16 +28,6 @@ class HoustonNotifier
         $this->config->configure($config);
     }
 
-    public function scope(array $config)
-    {
-        return new HoustonNotifier($this->extend($config));
-    }
-
-    public function extend(array $config)
-    {
-        return $this->config->extend($config);
-    }
-
     public function notify($level, $toLog, array $context = [])
     {
         $config = $this->config->getConfig();
@@ -84,10 +74,5 @@ class HoustonNotifier
 //        }
 
         return $this->config->send($payload);
-    }
-
-    private function handleResponse($payload, $response)
-    {
-        $this->config->handleResponse($payload, $response);
     }
 }

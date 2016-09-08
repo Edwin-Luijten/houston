@@ -36,6 +36,7 @@ class Message extends AbstractPayload
     function jsonSerialize()
     {
         $payload = ['body' => $this->body];
+
         foreach ($this->extra as $key => $value) {
             $payload[$key] = $value;
         }

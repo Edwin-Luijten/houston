@@ -5,9 +5,10 @@ namespace EdwinLuijten\Houston;
 class Error extends \Exception
 {
     /**
-     * @var int
+     * @var integer
      */
     public $errorLevel;
+
     /**
      * @var string
      */
@@ -19,12 +20,12 @@ class Error extends \Exception
     public $file;
 
     /**
-     * @var string
+     * @var integer
      */
     public $line;
 
     /**
-     * @var string
+     * @var array
      */
     public $backtrace;
 
@@ -52,6 +53,9 @@ class Error extends \Exception
         $this->backtrace    = $backtrace;
     }
 
+    /**
+     * @return array
+     */
     public function getBacktrace()
     {
         return $this->backtrace;
@@ -65,6 +69,10 @@ class Error extends \Exception
         return self::getConst($this->errorLevel) . ": " . $this->errorMessage;
     }
 
+    /**
+     * @param $const
+     * @return mixed|null
+     */
     private function getConst($const)
     {
         if (is_null(self::$consts)) {

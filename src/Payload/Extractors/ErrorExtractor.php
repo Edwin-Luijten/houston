@@ -26,12 +26,17 @@ class ErrorExtractor extends AbstractExtractor
         $this->setExceptionLevel($config);
         $this->setPsrLevels($config);
         $this->setErrorLevels($config);
+        $this->setContext($config);
     }
 
     public function extract($key, $level = null, $toLog = null)
     {
         if ($key === 'level' && !empty($level) && !empty($toLog)) {
             return $this->getLevel($level, $toLog);
+        }
+
+        if (property_exists($this, $key)) {
+            return $this->{$value};
         }
     }
 

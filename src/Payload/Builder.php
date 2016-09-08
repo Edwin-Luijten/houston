@@ -4,6 +4,7 @@ namespace EdwinLuijten\Houston\Payload;
 
 use EdwinLuijten\Houston\Error;
 use EdwinLuijten\Houston\Helper;
+use EdwinLuijten\Houston\Payload\Extractors\CommonExtractor;
 use EdwinLuijten\Houston\Payload\Extractors\EnvironmentExtractor;
 use EdwinLuijten\Houston\Payload\Extractors\ErrorExtractor;
 use EdwinLuijten\Houston\Payload\Extractors\RequestExtractor;
@@ -39,6 +40,11 @@ class Builder implements BuilderInterface
     private $errorExtractor;
 
     /**
+     * @var CommonExtractor
+     */
+    private $commonExtractor;
+
+    /**
      * Builder constructor.
      * @param $config
      */
@@ -48,6 +54,7 @@ class Builder implements BuilderInterface
         $this->serverExtractor      = new ServerExtractor($config);
         $this->environmentExtractor = new EnvironmentExtractor($config);
         $this->errorExtractor       = new ErrorExtractor($config);
+        $this->commonExtractor      = new CommonExtractor($config);
     }
 
     /**
@@ -71,12 +78,12 @@ class Builder implements BuilderInterface
         $data->setRequest($this->requestExtractor->extract());
         $data->setServer($this->serverExtractor->extract());
 
-        $data->setTitle($this->extractor->getTitle());
+        $data->setTitle($this->commonExtractor->extract('title'));
         $data->setUuid(Helper::uuid4());
-        $data->setLevel($this->extractor->getLevel($level, $toLog));
+        $data->setLevel($this->errorExtractor->extract('level', $level, $toLog));
 
 
-        $data->setContext($this->extractor->getContext());
+        $data->setContext($this->errorExtractor->extract('context'));
         $data->setCustom($this->extractor->getCustom());
 
         $data->setNotifier($this->extractor->getNotifier());

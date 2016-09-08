@@ -38,10 +38,10 @@ class EnvironmentExtractor extends AbstractExtractor
         $this->setLanguage();
     }
 
-    public function extract($value)
+    public function extract($key)
     {
-        if (property_exists($this, $value)) {
-            return $this->{$value};
+        if (property_exists($this, $key)) {
+            return $this->{$key};
         }
     }
 

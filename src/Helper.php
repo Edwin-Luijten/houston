@@ -2,10 +2,11 @@
 
 namespace EdwinLuijten\Houston;
 
-use EdwinLuijten\Houston\Payload\Partials\Body;
-
 class Helper
 {
+    /**
+     * @return null|mixed
+     */
     public static function coalesce()
     {
         $arguments = func_get_args();
@@ -18,9 +19,13 @@ class Helper
         return null;
     }
 
+    /**
+     * @return string
+     */
     public static function uuid4()
     {
         mt_srand();
+
         return sprintf(
             '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
             // 32 bits for "time_low"
@@ -61,6 +66,12 @@ class Helper
         );
     }
 
+    /**
+     * @param $objectVars
+     * @param array $override
+     * @param array $keys
+     * @return array
+     */
     public static function serialize($objectVars, array $override = [], array $keys = [])
     {
         $serialized = [];
