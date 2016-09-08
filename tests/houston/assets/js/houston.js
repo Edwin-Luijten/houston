@@ -76,10 +76,10 @@ var Houston = {
 
         // Reverse to get newest at the top
         $(this.problems.reverse()).each(function (key, value) {
-            var title = value.data.body.abstract_payload.exception.class;
+            var title = value.data.body.trace.exception.class;
             var level = value.data.level;
-            var message = value.data.body.abstract_payload.exception.message;
-            var line = value.data.body.abstract_payload.exception.line;
+            var message = value.data.body.trace.exception.message;
+            var line = value.data.body.trace.exception.line;
             var context = self.getContext(value);
             var timestamp = moment.unix(value.data.timestamp);
             var template = self.template.clone();
@@ -128,7 +128,7 @@ var Houston = {
 
     getContext: function (problem) {
         var context = '';
-        var frames = problem.data.body.abstract_payload.frames;
+        var frames = problem.data.body.trace.frames;
 
         $(frames).each(function (key, value) {
 
