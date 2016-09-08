@@ -11,6 +11,10 @@ abstract class AbstractPayload implements PayloadInterface, \JsonSerializable
      */
     public function getKey()
     {
-        return Helper::pascalToCamel(str_replace('EdwinLuijten\\Houston\\Payload\\Partials\\', '', self::class));
+        return Helper::pascalToCamel(str_replace([
+            'EdwinLuijten\\Houston\\Payload\\Partials\\StackTrace\\',
+            'EdwinLuijten\\Houston\\Payload\\Partials\\Abstract',
+            'EdwinLuijten\\Houston\\Payload\\Partials\\',
+        ], '', get_class($this)));
     }
 }
