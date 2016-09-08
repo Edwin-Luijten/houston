@@ -4,6 +4,10 @@ namespace EdwinLuijten\Houston\Payload;
 
 use EdwinLuijten\Houston\Error;
 use EdwinLuijten\Houston\Helper;
+use EdwinLuijten\Houston\Payload\Extractors\EnvironmentExtractor;
+use EdwinLuijten\Houston\Payload\Extractors\ErrorExtractor;
+use EdwinLuijten\Houston\Payload\Extractors\RequestExtractor;
+use EdwinLuijten\Houston\Payload\Extractors\ServerExtractor;
 use EdwinLuijten\Houston\Payload\Partials\Body;
 use EdwinLuijten\Houston\Payload\Partials\Context;
 use EdwinLuijten\Houston\Payload\Partials\Data;
@@ -15,9 +19,24 @@ use EdwinLuijten\Houston\Payload\Partials\StackTrace\TraceChain;
 class Builder implements BuilderInterface
 {
     /**
-     * @var Extractor
+     * @var RequestExtractor
      */
-    private $extractor;
+    private $requestExtractor;
+
+    /**
+     * @var ServerExtractor
+     */
+    private $serverExtractor;
+
+    /**
+     * @var EnvironmentExtractor
+     */
+    private $environmentExtractor;
+
+    /**
+     * @var ErrorExtractor
+     */
+    private $errorExtractor;
 
     /**
      * Builder constructor.
@@ -25,7 +44,10 @@ class Builder implements BuilderInterface
      */
     public function __construct($config)
     {
-        $this->extractor = new Extractor($config);
+        $this->requestExtractor     = new RequestExtractor($config);
+        $this->serverExtractor      = new ServerExtractor($config);
+        $this->environmentExtractor = new EnvironmentExtractor($config);
+        $this->errorExtractor       = new ErrorExtractor($config);
     }
 
     /**
@@ -36,26 +58,30 @@ class Builder implements BuilderInterface
      */
     public function construct($level, $toLog, $context)
     {
-        $environment = $this->extractor->getEnvironment();
+        $environment = $this->environmentExtractor->extract('environment');
 
         $body = $this->getBody($toLog, $context);
         $data = new Data($environment, $body);
 
-        $data->setFramework($this->extractor->getFramework());
-        $data->setLevel($this->extractor->getLevel($level, $toLog));
-        $data->setTimestamp($this->extractor->getTimestamp());
-        $data->setCodeVersion($this->extractor->getCodeVersion());
-        $data->setContext($this->extractor->getContext());
-        $data->setPlatform($this->extractor->getPlatform());
-        $data->setLanguage($this->extractor->getLanguage());
-        $data->setContext($this->extractor->getContext());
-        $data->setRequest($this->extractor->getRequest());
-        $data->setServer($this->extractor->getServer());
-        $data->setCustom($this->extractor->getCustom());
-        $data->setFingerprint($this->extractor->getFingerprint());
+        $data->setPlatform($this->environmentExtractor->extract('platform'));
+        $data->setLanguage($this->environmentExtractor->extract('language'));
+        $data->setFramework($this->environmentExtractor->extract('framework'));
+        $data->setCodeVersion($this->environmentExtractor->extract('codeVersion'));
+
+        $data->setRequest($this->requestExtractor->extract());
+        $data->setServer($this->serverExtractor->extract());
+
         $data->setTitle($this->extractor->getTitle());
-        $data->setNotifier($this->extractor->getNotifier());
         $data->setUuid(Helper::uuid4());
+        $data->setLevel($this->extractor->getLevel($level, $toLog));
+
+
+        $data->setContext($this->extractor->getContext());
+        $data->setCustom($this->extractor->getCustom());
+
+        $data->setNotifier($this->extractor->getNotifier());
+        $data->setFingerprint($this->extractor->getFingerprint());
+        $data->setTimestamp($this->extractor->getTimestamp());
 
         return $data;
     }
@@ -128,7 +154,7 @@ class Builder implements BuilderInterface
         $this->addContextToFrame($frame, $exception->getFile(), $exception->getLine());
 
         $frames[] = $frame;
-        $traces = $this->getTrace($exception);
+        $traces   = $this->getTrace($exception);
 
         foreach ($traces as $trace) {
             $filename   = Helper::coalesce(Helper::get($trace, 'file'), '<internal>');
