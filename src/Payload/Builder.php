@@ -82,28 +82,26 @@ class Builder implements BuilderInterface
         $data->setUuid(Helper::uuid4());
         $data->setLevel($this->errorExtractor->extract('level', $level, $toLog));
 
-
         $data->setContext($this->errorExtractor->extract('context'));
-        $data->setCustom($this->extractor->getCustom());
 
-        $data->setNotifier($this->extractor->getNotifier());
-        $data->setFingerprint($this->extractor->getFingerprint());
-        $data->setTimestamp($this->extractor->getTimestamp());
+        $data->setNotifier($this->commonExtractor->extract('notifier'));
+        $data->setFingerprint($this->errorExtractor->extract('fingerprint'));
+        $data->setTimestamp($this->commonExtractor->extract('timestamp'));
 
         return $data;
     }
 
     protected function getBody($toLog, $context)
     {
-        $baseException = $this->extractor->getBaseException();
+        $baseException = $this->errorExtractor->extract('baseException');
 
         if ($toLog instanceof Error) {
             $content = $this->getErrorTrace($toLog);
         } elseif ($toLog instanceof $baseException) {
             $content = $this->getExceptionTrace($toLog);
         } else {
-            $scrubFields = $this->extractor->getScrubFields();
-            $content     = $this->extractor->getMessage($toLog, $this->extractor->scrub($context, $scrubFields));
+            $scrubFields = $this->commonExtractor->getScrubFields();
+            $content     = $this->errorExtractor->extract('message', null, $toLog);
         }
 
         return new Body($content);
@@ -120,7 +118,7 @@ class Builder implements BuilderInterface
 
         $previous = $exception->getPrevious();
 
-        $baseException = $this->extractor->getBaseException();
+        $baseException = $this->errorExtractor->extract('baseException');
 
         while ($previous instanceof $baseException) {
             $chain[]  = $this->makeTrace($previous);
@@ -172,7 +170,7 @@ class Builder implements BuilderInterface
             $frame->setLineNumber($lineNumber);
             $frame->setMethod($method);
 
-            if ($this->extractor->willIncludeContext()) {
+            if ($this->errorExtractor->extract('willIncludeContext')) {
                 $this->addContextToFrame($frame, $filename, $lineNumber);
             }
 
@@ -183,7 +181,7 @@ class Builder implements BuilderInterface
 
         $nFrames = count($frames);
 
-        if ($this->extractor->willShiftFunction() && $nFrames > 0) {
+        if ($this->errorExtractor->extract('willShiftFunction') && $nFrames > 0) {
             for ($i = $nFrames - 1; $i > 0; $i--) {
                 $frames[$i]->setMethod($frames[$i - 1]->getMethod());
             }

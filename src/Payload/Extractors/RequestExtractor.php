@@ -43,7 +43,7 @@ class RequestExtractor extends AbstractExtractor
         $request = new Request();
         $request->setUrl($this->getUrl());
         $request->setMethod($this->get($_SERVER, 'REQUEST_METHOD'));
-        $request->setHeaders($this->getScrubbedHeaders($this->scrubFields));
+        $request->setHeaders($this->getScrubbedHeaders());
         $request->setParams($this->requestParams);
         $request->setGet($this->scrub($_GET));
         $request->setQueryString($this->scrubUrl($this->get($_SERVER, 'QUERY_STRING')));
@@ -153,9 +153,9 @@ class RequestExtractor extends AbstractExtractor
      * @param $scrubFields
      * @return null
      */
-    public function getScrubbedHeaders($scrubFields)
+    public function getScrubbedHeaders()
     {
-        return $this->scrub($this->getHeaders(), $scrubFields);
+        return $this->scrub($this->getHeaders());
     }
 
     /**

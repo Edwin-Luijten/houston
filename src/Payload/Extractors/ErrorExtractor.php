@@ -18,6 +18,15 @@ class ErrorExtractor extends AbstractExtractor
 
     private $messageLevel;
 
+    private $baseException;
+
+    private $willIncludeContext = true;
+
+    /**
+     * @var string
+     */
+    private $fingerPrint;
+
     public function __construct($config)
     {
         parent::__construct($config);
@@ -27,16 +36,32 @@ class ErrorExtractor extends AbstractExtractor
         $this->setPsrLevels($config);
         $this->setErrorLevels($config);
         $this->setContext($config);
+        $this->setBaseException($config);
+        $this->setWillIncludeCodeContext($config);
+
+        $this->willShiftFunction = $this->get($config, 'shift_function');
+
+        if (!isset($this->willShiftFunction)) {
+            $this->willShiftFunction = true;
+        }
     }
 
     public function extract($key, $level = null, $toLog = null)
     {
-        if ($key === 'level' && !empty($level) && !empty($toLog)) {
+        if ($key === 'level') {
             return $this->getLevel($level, $toLog);
         }
 
+        if ($key === 'fingerprint') {
+            return $this->getFingerprint($toLog);
+        }
+
+        if ($key === 'message') {
+            return $this->getMessage($toLog);
+        }
+
         if (property_exists($this, $key)) {
-            return $this->{$value};
+            return $this->{$key};
         }
     }
 
@@ -61,9 +86,27 @@ class ErrorExtractor extends AbstractExtractor
     }
 
     /**
+     * @param $toLog
+     * @return string
+     */
+    private function getFingerprint($toLog) {
+        return md5((string)$toLog);
+    }
+
+    /**
+     * @param $toLog
+     * @param $context
+     * @return Message
+     */
+    private function getMessage($toLog, $context)
+    {
+        return new Message((string)$toLog, $this->context);
+    }
+
+    /**
      * @param mixed $context
      */
-    public function setContext($context)
+    private function setContext($context)
     {
         $this->context = $this->get($context, 'context');
     }
@@ -71,7 +114,7 @@ class ErrorExtractor extends AbstractExtractor
     /**
      * @param mixed $errorLevels
      */
-    public function setErrorLevels($errorLevels)
+    private function setErrorLevels($errorLevels)
     {
         $this->errorLevels = self::$defaults->errorLevels($this->get($errorLevels, 'errorLevels'));
     }
@@ -79,7 +122,7 @@ class ErrorExtractor extends AbstractExtractor
     /**
      * @param $messageLevel
      */
-    public function setMessageLevel($messageLevel)
+    private function setMessageLevel($messageLevel)
     {
         $this->messageLevel = self::$defaults->messageLevel($this->get($messageLevel, 'messageLevel'));
     }
@@ -87,7 +130,7 @@ class ErrorExtractor extends AbstractExtractor
     /**
      * @param $exceptionLevel
      */
-    public function setExceptionLevel($exceptionLevel)
+    private function setExceptionLevel($exceptionLevel)
     {
         $this->exceptionLevel = self::$defaults->exceptionLevel($this->get($exceptionLevel, 'exceptionLevel'));
     }
@@ -95,8 +138,30 @@ class ErrorExtractor extends AbstractExtractor
     /**
      * @param $psrLevels
      */
-    public function setPsrLevels($psrLevels)
+    private function setPsrLevels($psrLevels)
     {
         $this->psrLevels = self::$defaults->psrLevels($this->get($psrLevels, 'psrLevels'));
+    }
+
+    /**
+     * @param mixed $baseException
+     * @return Builder
+     */
+    private function setBaseException($baseException)
+    {
+        $this->baseException = self::$defaults->baseException($this->get($baseException, 'baseException'));
+    }
+
+    /**
+     * @param mixed $includeCodeContext
+     * @return Builder
+     */
+    private function setWillIncludeCodeContext($includeCodeContext)
+    {
+        $codeContext = $this->get($includeCodeContext, 'include_error_code_context');
+
+        if (!is_null($codeContext)) {
+            $this->willIncludeContext = $codeContext;
+        }
     }
 }

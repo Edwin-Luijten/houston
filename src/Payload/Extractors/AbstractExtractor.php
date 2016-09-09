@@ -8,8 +8,13 @@ use EdwinLuijten\Houston\Helper;
 abstract class AbstractExtractor
 {
     protected static $defaults;
-    protected $scrubFields;
 
+    protected $scrubFields = [];
+
+    /**
+     * AbstractExtractor constructor.
+     * @param $config
+     */
     public function __construct($config)
     {
         self::$defaults = Defaults::get();
@@ -23,6 +28,14 @@ abstract class AbstractExtractor
     public function setScrubFields($scrubFields)
     {
         $this->scrubFields = self::$defaults->scrubFields($this->get($scrubFields, 'scrubFields'));
+    }
+
+    /**
+     * @return array
+     */
+    public function getScrubFields()
+    {
+        return $this->scrubFields;
     }
 
     /**
