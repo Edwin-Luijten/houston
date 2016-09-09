@@ -14,7 +14,7 @@ body {
     float: right;
 }
 
-.source-info {
+.source-info, .related-problems {
     padding-top:10px;
     padding-bottom: 10px;
 }
@@ -48,4 +48,9 @@ body {
     border: 2px solid #000;
     color: #000;
     background-color: transparent;
+}
+
+.animated.fast {
+    -webkit-animation-duration: 1s;
+    animation-duration: 1s;
 }

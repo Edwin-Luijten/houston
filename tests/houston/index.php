@@ -84,6 +84,7 @@ foreach (glob('./*.problem') as $file) {
                 <ul class="nav nav-tabs" role="tablist">
                     <li class="active tab-traceback"><a href="" data-toggle="tab">Traceback</a></li>
                     <li class="tab-browser-os"><a href="" data-toggle="tab">Browser/OS</a></li>
+                    <li class="tab-related"><a href="" data-toggle="tab">Related</a></li>
                     <li class="tab-stack-overflow"><a href="" target="_blank"><i class="fa fa-stack-overflow"></i>&nbsp;
                         </a></li>
                 </ul>
@@ -92,6 +93,7 @@ foreach (glob('./*.problem') as $file) {
 
                     </div>
                     <div class="tab-pane pane-browser-os">...</div>
+                    <div class="tab-pane pane-related">...</div>
                 </div>
             </div>
         </div>
