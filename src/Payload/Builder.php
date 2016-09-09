@@ -44,17 +44,15 @@ class Builder implements BuilderInterface
      */
     private $commonExtractor;
 
+    private $config;
+
     /**
      * Builder constructor.
      * @param $config
      */
     public function __construct($config)
     {
-        $this->requestExtractor     = new RequestExtractor($config);
-        $this->serverExtractor      = new ServerExtractor($config);
-        $this->environmentExtractor = new EnvironmentExtractor($config);
-        $this->errorExtractor       = new ErrorExtractor($config);
-        $this->commonExtractor      = new CommonExtractor($config);
+        $this->config = $config;
     }
 
     /**
@@ -65,6 +63,12 @@ class Builder implements BuilderInterface
      */
     public function construct($level, $toLog, $context)
     {
+        $this->requestExtractor     = new RequestExtractor($this->config);
+        $this->serverExtractor      = new ServerExtractor($this->config);
+        $this->environmentExtractor = new EnvironmentExtractor($this->config);
+        $this->commonExtractor      = new CommonExtractor($this->config);
+        $this->errorExtractor       = new ErrorExtractor($this->config, $level, $toLog, $context);
+
         $environment = $this->environmentExtractor->extract('environment');
 
         $body = $this->getBody($toLog, $context);
@@ -80,7 +84,7 @@ class Builder implements BuilderInterface
 
         $data->setTitle($this->commonExtractor->extract('title'));
         $data->setUuid(Helper::uuid4());
-        $data->setLevel($this->errorExtractor->extract('level', $level, $toLog));
+        $data->setLevel($this->errorExtractor->extract('level'));
 
         $data->setContext($this->errorExtractor->extract('context'));
 

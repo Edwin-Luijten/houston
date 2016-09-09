@@ -4,6 +4,7 @@ namespace EdwinLuijten\Houston\Payload\Extractors;
 
 use EdwinLuijten\Houston\Error;
 use EdwinLuijten\Houston\Payload\Partials\Level;
+use EdwinLuijten\Houston\Payload\Partials\Message;
 
 class ErrorExtractor extends AbstractExtractor
 {
@@ -22,20 +23,29 @@ class ErrorExtractor extends AbstractExtractor
 
     private $willIncludeContext = true;
 
+    private $willShiftFunction;
+
+    private $toLog;
+
+    private $level;
+
     /**
      * @var string
      */
     private $fingerPrint;
 
-    public function __construct($config)
+    public function __construct($config, $level, $toLog, $context)
     {
         parent::__construct($config);
+
+        $this->toLog = $toLog;
+        $this->level = $level;
 
         $this->setMessageLevel($config);
         $this->setExceptionLevel($config);
         $this->setPsrLevels($config);
         $this->setErrorLevels($config);
-        $this->setContext($config);
+        $this->setContext($context);
         $this->setBaseException($config);
         $this->setWillIncludeCodeContext($config);
 
@@ -46,18 +56,18 @@ class ErrorExtractor extends AbstractExtractor
         }
     }
 
-    public function extract($key, $level = null, $toLog = null)
+    public function extract($key)
     {
         if ($key === 'level') {
-            return $this->getLevel($level, $toLog);
+            return $this->getLevel();
         }
 
         if ($key === 'fingerprint') {
-            return $this->getFingerprint($toLog);
+            return $this->getFingerprint();
         }
 
         if ($key === 'message') {
-            return $this->getMessage($toLog);
+            return $this->getMessage();
         }
 
         if (property_exists($this, $key)) {
@@ -66,16 +76,14 @@ class ErrorExtractor extends AbstractExtractor
     }
 
     /**
-     * @param mixed $level
-     * @param $toLog
-     * @return
+     * @return Level
      */
-    private function getLevel($level, $toLog)
+    private function getLevel()
     {
-        if (is_null($level)) {
-            if ($toLog instanceof Error) {
-                $level = $this->get($this->errorLevels, $toLog->errorLevel);
-            } elseif ($toLog instanceof \Exception) {
+        if (is_null($this->level)) {
+            if ($this->toLog instanceof Error) {
+                $level = $this->get($this->errorLevels, $this->toLog->errorLevel);
+            } elseif ($this->toLog instanceof \Exception) {
                 $level = $this->exceptionLevel;
             } else {
                 $level = $this->messageLevel;
@@ -86,21 +94,18 @@ class ErrorExtractor extends AbstractExtractor
     }
 
     /**
-     * @param $toLog
      * @return string
      */
-    private function getFingerprint($toLog) {
-        return md5((string)$toLog);
+    private function getFingerprint() {
+        return md5((string)$this->toLog);
     }
 
     /**
-     * @param $toLog
-     * @param $context
      * @return Message
      */
-    private function getMessage($toLog, $context)
+    private function getMessage()
     {
-        return new Message((string)$toLog, $this->context);
+        return new Message((string)$this->toLog, $this->context);
     }
 
     /**
@@ -145,7 +150,6 @@ class ErrorExtractor extends AbstractExtractor
 
     /**
      * @param mixed $baseException
-     * @return Builder
      */
     private function setBaseException($baseException)
     {
@@ -154,7 +158,6 @@ class ErrorExtractor extends AbstractExtractor
 
     /**
      * @param mixed $includeCodeContext
-     * @return Builder
      */
     private function setWillIncludeCodeContext($includeCodeContext)
     {
