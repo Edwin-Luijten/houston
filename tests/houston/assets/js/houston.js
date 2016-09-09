@@ -163,21 +163,26 @@ var Houston = {
 
         $(frames).each(function (key, value) {
 
-            context = context + '<div class="source-info"><span class="source-file">File: ' + value.filename + '</span><br/>';
-            context = context + '<span class="source-line">Line: ' + value.line_number + '</span></div>';
+            context = context + '<div class="source-info"><span class="source-file"><em>File: ' + value.filename + '</em></span><br/>';
+            context = context + '<span class="source-line"><em>Line: ' + value.line_number + '</em></span></div>';
+
             context = context + '<pre><code class="php">';
+
             $(value.context).each(function (key, cnt) {
 
                 $(cnt.pre).each(function (key, code) {
                     context = context + code;
                 });
+
                 context = context + '<span class="problem">';
                 context = context + value.code;
                 context = context + '</span>'; // + '\n';
+
                 $(cnt.post).each(function (key, code) {
                     context = context + code;
                 });
             });
+
             context = context + '</code></pre>';
         });
 
@@ -189,12 +194,10 @@ var Houston = {
             var target = $(this).attr('href');
             var element = $(document.getElementById(target.replace('#', '')));
 
-            console.log($(document.getElementById(target.replace('#', ''))));
-
             $('html, body').animate({
                 scrollTop: element.offset().top - 80
             }, 1000, function(){
-                element.addClass('animated pulse fast');
+                element.animateCss('pulse fast');
             });
         });
 

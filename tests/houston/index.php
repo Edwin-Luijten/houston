@@ -14,7 +14,7 @@ foreach (glob('./*.problem') as $file) {
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <title>Houston we have a problem</title>
-    <!-- Latest compiled and minified CSS -->
+
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
           integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link href="./assets/css/paper.css" rel="stylesheet">
@@ -109,6 +109,7 @@ foreach (glob('./*.problem') as $file) {
 <script src="./assets/js/storage.js"></script>
 <script src="./assets/js/countTo.js"></script>
 <script src="./assets/js/filter.js"></script>
+<script src="./assets/js/animateCss.js"></script>
 <script src="./assets/js/houston.js"></script>
 <script>
     Houston.init();
